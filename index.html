@@ -9,7 +9,9 @@
 <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
 <link href="https://api.fontshare.com/v2/css?f[]=gambarino@400&display=swap" rel="stylesheet">
 <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css?v=6">
 <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
@@ -21,13 +23,13 @@
 
 <main id="top">
   <section class="intro">
-    <h1 class="reveal">youtaro, senior full&#8209;stack developer</h1>
-    <div class="intro-row">
+    <div class="intro-text">
+      <h1 class="reveal">youtaro, senior full&#8209;stack developer</h1>
       <p class="reveal">Based in Phnom Penh. I build web apps end to end, from Postgres and PostGIS to the screen. Mostly maps and the systems around them.</p>
-      <div class="farm reveal" id="farm">
-        <div class="field" role="group" aria-label="Taro's farm plot"></div>
-        <p class="farm-meta"><span class="hint">WASD to walk, E or Space to plant and harvest.</span> <span class="harvest" aria-live="polite"></span></p>
-      </div>
+    </div>
+    <div class="farm reveal" id="farm">
+      <div class="field" role="img" aria-label="A small farm where Taro walks around and harvests crops. Use WASD or arrow keys to walk."></div>
+      <p class="farm-meta"><span class="hint">WASD to walk</span><button type="button" class="sound" aria-pressed="true">Sound on</button><span class="harvest" aria-live="polite"></span></p>
     </div>
   </section>
 
@@ -94,7 +96,7 @@
 </footer>
 -->
 
-<script src="main.js"></script>
-<script src="farm.js" defer></script>
+<script src="main.js?v=6"></script>
+<script src="farm.js?v=6" defer></script>
 </body>
 </html>
