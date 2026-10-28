@@ -85,6 +85,42 @@ h1 { font-size: var(--step-display); max-width: 14em; }
 .side-list p { max-width: 32ch; }
 .links { display: flex; gap: 20px; margin-top: 12px; }
 
+.farm { padding: 0 var(--m); margin-top: clamp(140px, 14vw, 200px); }
+.farm > h2 { font-size: var(--step-head); }
+.field {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 6px;
+  max-width: 720px;
+  padding: 10px;
+  background: #a8865f;
+  border-radius: 6px;
+}
+.tile {
+  position: relative;
+  aspect-ratio: 1;
+  padding: 12%;
+  border: 0;
+  border-radius: 3px;
+  cursor: pointer;
+  background: repeating-linear-gradient(0deg, #7a5536 0 6px, #6c4a2e 6px 9px);
+  box-shadow: inset 0 -3px 0 rgb(0 0 0 / .18);
+  transition: transform .15s var(--ease);
+}
+.tile:hover { transform: translateY(-2px); }
+.tile:active { transform: scale(.94); }
+.tile svg { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+.tile.ready svg { animation: bob 1.4s ease-in-out infinite; }
+.pop {
+  position: absolute; left: 50%; top: 0;
+  font: 500 .875rem/1 var(--text); color: #fff;
+  pointer-events: none;
+  animation: pop .7s var(--ease) forwards;
+}
+.harvest { margin-top: 14px; color: var(--muted); font-size: var(--step-small); }
+@keyframes bob { 50% { transform: translateY(-6%); } }
+@keyframes pop { from { opacity: 1; transform: translate(-50%, 0); } to { opacity: 0; transform: translate(-50%, -28px); } }
+
 .contact { padding: clamp(140px, 16vw, 220px) var(--m) 120px; }
 .contact h2 { margin-bottom: 24px; }
 .big { font-size: clamp(2.5rem, 1rem + 6vw, 6.5rem); text-decoration: none; }
@@ -142,6 +178,7 @@ h1 { font-size: var(--step-display); max-width: 14em; }
   .intro { padding-top: 72px; }
   .intro p { margin-top: 28px; }
   .areas, .side-list { grid-template-columns: 1fr; gap: 36px; }
+  .field { grid-template-columns: repeat(6, 1fr); }
   .big { font-size: 10.5vw; }
   .foot { min-height: 80svh; }
   .foot-top { flex-direction: column; }
@@ -152,4 +189,6 @@ h1 { font-size: var(--step-display); max-width: 14em; }
   html { scroll-behavior: auto; }
   .js .reveal { opacity: 1; transform: none; transition: none; }
   .foot-pic { transform: none; transition: none; }
+  .tile.ready svg, .pop { animation: none; }
+  .pop { display: none; }
 }
