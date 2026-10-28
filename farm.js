@@ -56,6 +56,21 @@
     step: () => blip([[180, 0.05]], 'triangle', 0.08),
     harvest: () => blip([[660, 0.08], [880, 0.08], [1320, 0.16]]),
     bump: () => blip([[90, 0.08]], 'square', 0.04),
+    boom: () => {
+      if (muted) return;
+      ctx ||= new (window.AudioContext || window.webkitAudioContext)();
+      // A short burst of noise, like a pop and crackle.
+      const len = ctx.sampleRate * 0.6;
+      const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len) ** 3;
+      const src = ctx.createBufferSource();
+      const g = ctx.createGain();
+      g.gain.value = 0.18;
+      src.buffer = buf;
+      src.connect(g).connect(ctx.destination);
+      src.start();
+    },
   };
   function showSound() {
     soundBtn.textContent = muted ? 'Sound off' : 'Sound on';
@@ -119,6 +134,43 @@
     setTimeout(() => s.remove(), 700);
     if (!quiet) sfx.harvest();
     showCount();
+    if (state.harvested % 10 === 0) fireworks();
+  }
+
+  // Every 10th harvest: pixel fireworks over the whole page.
+  function fireworks() {
+    const cv = document.createElement('canvas');
+    cv.className = 'fireworks';
+    const dpr = Math.min(2, devicePixelRatio || 1);
+    cv.width = innerWidth * dpr;
+    cv.height = innerHeight * dpr;
+    document.body.append(cv);
+    const g = cv.getContext('2d');
+    g.scale(dpr, dpr);
+    const COLORS = ['#e07b2e', '#f2c94c', '#d4423a', '#8ab44f', '#3d6fa8', '#8a4f9e'];
+    const parts = [];
+    const burst = (x, y) => {
+      const col = COLORS[Math.floor(Math.random() * COLORS.length)];
+      for (let i = 0; i < 72; i++) {
+        const a = (i / 72) * Math.PI * 2, v = 3 + Math.random() * 5;
+        parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1, col });
+      }
+      sfx.boom();
+    };
+    const W = innerWidth, H = innerHeight;
+    [0, 350, 700, 1000, 1300].forEach((ms) => setTimeout(() => burst(W * (0.15 + Math.random() * 0.7), H * (0.15 + Math.random() * 0.4)), ms));
+    const start = performance.now();
+    (function frame(now) {
+      g.clearRect(0, 0, W, H);
+      parts.forEach((p) => {
+        p.x += p.vx; p.y += p.vy; p.vy += 0.06; p.vx *= 0.985; p.life -= 0.012;
+        if (p.life <= 0) return;
+        g.globalAlpha = p.life;
+        g.fillStyle = p.col;
+        g.fillRect(Math.round(p.x), Math.round(p.y), 5, 5);
+      });
+      if (now - start < 3200) requestAnimationFrame(frame); else cv.remove();
+    })(start);
   }
 
   function showCount() {

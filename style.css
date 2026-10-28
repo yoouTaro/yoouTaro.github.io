@@ -136,6 +136,7 @@ h1 { font-size: var(--step-display); max-width: 14em; }
 .intro .farm-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-top: 12px; color: var(--muted); font-size: .8125rem; white-space: nowrap; max-width: none; }
 .sound { padding: 0; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; text-decoration: underline; text-underline-offset: .2em; text-decoration-thickness: 1px; }
 .sound:hover { color: var(--ink); }
+.fireworks { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
 @keyframes step { 50% { translate: 0 -8%; } }
 @keyframes bob { 50% { transform: translateY(-6%); } }
 @keyframes pop { from { opacity: 1; transform: translate(-50%, 0); } to { opacity: 0; transform: translate(-50%, -28px); } }
