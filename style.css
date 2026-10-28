@@ -25,6 +25,18 @@ body {
   font: 400 var(--step-body)/1.5 var(--text);
   -webkit-font-smoothing: antialiased;
 }
+/* Dot grid behind everything, fading out toward the bottom of the screen. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: radial-gradient(circle, rgb(20 18 16 / .18) 1px, transparent 1.4px);
+  background-size: 22px 22px;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgb(0 0 0 / .35) 70%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, rgb(0 0 0 / .35) 70%, transparent 100%);
+}
 h1, h2, h3, p { margin: 0; }
 img, video { display: block; max-width: 100%; height: auto; }
 a { color: inherit; text-underline-offset: .2em; text-decoration-thickness: 1px; }
