@@ -8,13 +8,14 @@
   const KEY = 'yt-farm-v1';
 
   // 8×8 pixel sprites. Each letter is a colour, "." is empty.
-  const C = { s: '#5a3d24', g: '#5f8a3a', l: '#8ab44f', o: '#e07b2e', w: '#efe9dc', p: '#8a4f9e', r: '#d4423a', y: '#f2c94c' };
+  const C = { h: '#2a1d14', k: '#e8b48a', e: '#141210', t: '#3d6fa8', n: '#3a3530', b: '#5a3d24', s: '#5a3d24', g: '#5f8a3a', l: '#8ab44f', o: '#e07b2e', w: '#efe9dc', p: '#8a4f9e', r: '#d4423a', y: '#f2c94c' };
   const SPRITES = {
     seed:   ['........', '........', '........', '........', '........', '........', '..s..s..', '........'],
     sprout: ['........', '........', '........', '........', '...l.l..', '....g...', '....g...', '........'],
     leafy:  ['........', '........', '..l...l.', '...lgl..', '..lgggl.', '....g...', '....g...', '........'],
     carrot: ['..l.l.l.', '...lgl..', '....g...', '...ooo..', '...ooo..', '....o...', '....o...', '........'],
     turnip: ['...l.l..', '....g...', '...www..', '..wwwww.', '..ppwpp.', '...ppp..', '....p...', '........'],
+    taro:   ['..hhhh..', '.hhhhhh.', '.hkkkkh.', '..kkkek.', '..tttt..', '.kttttk.', '..nnnn..', '..b..b..'],
     berry:  ['..l..l..', '...gg...', '..rrrr..', '.rryrrr.', '.rrrryr.', '..ryrr..', '...rr...', '........'],
   };
   const CROPS = ['carrot', 'turnip', 'berry'];
@@ -44,7 +45,7 @@
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'tile';
-    b.addEventListener('click', () => act(i));
+    b.addEventListener('click', () => { if (i !== at) { taro.classList.toggle('left', i % cols() < at % cols()); at = i; place(true); } act(i); });
     field.append(b);
     return b;
   });
@@ -88,14 +89,52 @@
     countEl.textContent = n ? `${n} harvested` : 'Nothing harvested yet';
   }
 
+  // Taro walks tile to tile.
+  const taro = document.createElement('div');
+  taro.className = 'taro';
+  taro.innerHTML = art.taro + '<span class="taro-name">Taro</span>';
+  field.append(taro);
+  let at = 0;
+
+  const cols = () => getComputedStyle(field).gridTemplateColumns.split(' ').length;
+  function place(step) {
+    const b = buttons[at];
+    taro.style.width = `${b.offsetWidth}px`;
+    taro.style.height = `${b.offsetHeight}px`;
+    taro.style.transform = `translate(${b.offsetLeft}px, ${b.offsetTop - b.offsetHeight * 0.18}px)`;
+    buttons.forEach((x, i) => x.classList.toggle('here', i === at));
+    if (step) { taro.classList.remove('step'); void taro.offsetWidth; taro.classList.add('step'); }
+  }
+  function move(dx, dy) {
+    const c = cols(), x = at % c, y = Math.floor(at / c), rows = Math.ceil(TILES / c);
+    const nx = Math.min(c - 1, Math.max(0, x + dx)), ny = Math.min(rows - 1, Math.max(0, y + dy));
+    if (dx) taro.classList.toggle('left', dx < 0);
+    const next = ny * c + nx;
+    if (next === at || next >= TILES) return;
+    at = next;
+    place(true);
+  }
+
+  const KEYS = { w: [0, -1], a: [-1, 0], s: [0, 1], d: [1, 0], arrowup: [0, -1], arrowleft: [-1, 0], arrowdown: [0, 1], arrowright: [1, 0] };
+  let visible = false;
+  addEventListener('keydown', (e) => {
+    if (!visible || e.metaKey || e.ctrlKey || e.altKey || e.target.closest?.('input, textarea, [contenteditable]')) return;
+    const k = e.key.toLowerCase();
+    if (KEYS[k]) { e.preventDefault(); move(...KEYS[k]); }
+    else if (k === 'e' || k === ' ' || (k === 'enter' && !e.target.closest?.('a, button'))) { e.preventDefault(); act(at); }
+  });
+  new ResizeObserver(() => place(false)).observe(field);
+
   buttons.forEach((_, i) => paint(i));
   showCount();
+  place(false);
 
   // Only tick while the field is on screen.
   let timer = null;
   const tick = () => buttons.forEach((_, i) => paint(i));
   new IntersectionObserver(([e]) => {
     clearInterval(timer);
-    if (e.isIntersecting) { tick(); timer = setInterval(tick, 500); }
+    visible = e.isIntersecting;
+    if (visible) { tick(); timer = setInterval(tick, 500); }
   }).observe(field);
 })();
