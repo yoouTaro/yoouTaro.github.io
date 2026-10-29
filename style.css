@@ -122,14 +122,25 @@ h1 { font-size: var(--step-display); max-width: 14em; }
   transition: transform .16s linear;
   z-index: 1;
 }
-.taro svg { display: block; width: 100%; height: 100%; }
-.taro.left svg { transform: scaleX(-1); }
-.taro.step svg { animation: step .16s steps(2); }
+.taro-body { position: relative; width: 100%; height: 100%; }
+.taro-body > svg { display: block; width: 100%; height: 100%; }
+.taro.left .taro-body { transform: scaleX(-1); }
+.taro.step .taro-body > svg { animation: step .16s steps(2); }
+/* Sword swing when Taro harvests. */
+.sword { position: absolute; left: 66%; bottom: 30%; width: 22%; height: 58%; transform-origin: 50% 90%; opacity: 0; }
+.sword svg { display: block; width: 100%; height: 100%; }
+.swoosh { position: absolute; left: 40%; top: -10%; width: 90%; height: 90%; border-radius: 50%; border: 3px solid transparent; border-top-color: #fff; border-right-color: #fff; opacity: 0; }
+.taro.slash .sword { animation: swing .26s cubic-bezier(.3, .7, .2, 1); }
+.taro.slash .swoosh { animation: swoosh .26s ease-out; }
+.tile.chop { animation: chop .2s steps(2); }
+@keyframes swing { 0% { opacity: 1; transform: rotate(-70deg); } 80% { opacity: 1; transform: rotate(120deg); } 100% { opacity: 0; transform: rotate(120deg); } }
+@keyframes swoosh { 0% { opacity: 0; transform: rotate(-60deg); } 40% { opacity: .9; } 100% { opacity: 0; transform: rotate(40deg); } }
+@keyframes chop { 50% { transform: translateX(3px); } }
 .taro-name {
   position: absolute; left: 50%; bottom: 100%;
-  transform: translate(-50%, 2px);
-  padding: 1px 6px;
-  font: 500 .6875rem/1.4 var(--text);
+  transform: translate(-50%, -6px);
+  padding: 0 5px;
+  font: 500 .625rem/1.5 var(--text);
   color: #fff; background: rgb(20 18 16 / .78);
   border-radius: 3px; white-space: nowrap;
 }
@@ -198,7 +209,7 @@ h1 { font-size: var(--step-display); max-width: 14em; }
   .intro { padding-top: 72px; }
   .intro { flex-direction: column; align-items: flex-start; }
   .intro p { margin-top: 28px; }
-  .farm { flex: none; width: min(100%, 320px); }
+  .farm { flex: none; width: min(100%, 320px); align-self: center; margin-top: 56px; }
   .hint { display: none; }
   .areas, .side-list { grid-template-columns: 1fr; gap: 36px; }
   .big { font-size: 10.5vw; }

@@ -11,7 +11,7 @@
   const KEY = 'yt-farm-v3';
 
   // 8×8 pixel sprites. Each letter is a colour, "." is empty.
-  const C = { h: '#2a1d14', k: '#e8b48a', e: '#141210', t: '#3d6fa8', n: '#3a3530', b: '#5a3d24', s: '#5a3d24', g: '#5f8a3a', l: '#8ab44f', o: '#e07b2e', w: '#efe9dc', p: '#8a4f9e', r: '#d4423a', y: '#f2c94c' };
+  const C = { x: '#2a1d14', H: '#e3b55a', h: '#a8452f', d: '#3b2618', k: '#f0c29a', K: '#d9a37a', e: '#1b1410', t: '#f3efe4', u: '#3d6fa8', b: '#5a3d24', s: '#5a3d24', g: '#5f8a3a', l: '#8ab44f', o: '#e07b2e', w: '#efe9dc', p: '#8a4f9e', r: '#d4423a', y: '#f2c94c' };
   const SPRITES = {
     seed:   ['........', '........', '........', '........', '........', '........', '..s..s..', '........'],
     sprout: ['........', '........', '........', '........', '...l.l..', '....g...', '....g...', '........'],
@@ -19,7 +19,7 @@
     carrot: ['..l.l.l.', '...lgl..', '....g...', '...ooo..', '...ooo..', '....o...', '....o...', '........'],
     turnip: ['...l.l..', '....g...', '...www..', '..wwwww.', '..ppwpp.', '...ppp..', '....p...', '........'],
     berry:  ['..l..l..', '...gg...', '..rrrr..', '.rryrrr.', '.rrrryr.', '..ryrr..', '...rr...', '........'],
-    taro:   ['..hhhh..', '.hhhhhh.', '.hkkkkh.', '..kkkek.', '..tttt..', '.kttttk.', '..nnnn..', '..b..b..'],
+    taro:   ['......xxxx......', '....xxHHHHxx....', '...xHHHHHHHHx...', '.xxHHHHHHHHHHxx.', 'xHHHHHHHHHHHHHHx', '.xxhhhhhhhhhhxx.', '..xddkkkkkkddx..', '..xdkkekkekkdx..', '..xkkkkkkkkkkx..', '...xkkkKKkkkx...', '..xttuuuuuuttx..', '.xkttuuuuuuttkx.', '.xkxuuuuuuuxkx..', '...xuuuxxuuux...', '...xbbbx.xbbbx..', '...xxxxx.xxxxx..'],
   };
   const CROPS = ['carrot', 'turnip', 'berry'];
 
@@ -28,8 +28,9 @@
     rows.forEach((row, y) => [...row].forEach((ch, x) => {
       if (ch !== '.') out += `<rect x="${x}" y="${y}" width="1" height="1" fill="${C[ch]}"/>`;
     }));
-    return `<svg viewBox="0 0 8 8" shape-rendering="crispEdges" aria-hidden="true">${out}</svg>`;
+    return `<svg viewBox="0 0 ${rows[0].length} ${rows.length}" shape-rendering="crispEdges" aria-hidden="true">${out}</svg>`;
   };
+  const SWORD = svg(['.w.', '.w.', '.w.', '.w.', '.w.', 'yyy', '.b.', '.b.']);
   const art = Object.fromEntries(Object.entries(SPRITES).map(([k, v]) => [k, svg(v)]));
 
   // Sound: tiny chiptune blips made with Web Audio, no files.
@@ -56,6 +57,7 @@
     step: () => blip([[180, 0.05]], 'triangle', 0.08),
     harvest: () => blip([[660, 0.08], [880, 0.08], [1320, 0.16]]),
     bump: () => blip([[90, 0.08]], 'square', 0.04),
+    swish: () => blip([[1400, 0.03], [900, 0.03], [500, 0.05]], 'sawtooth', 0.03),
     boom: () => {
       if (muted) return;
       ctx ||= new (window.AudioContext || window.webkitAudioContext)();
@@ -132,7 +134,9 @@
     s.textContent = '+1';
     tiles[i].append(s);
     setTimeout(() => s.remove(), 700);
-    if (!quiet) sfx.harvest();
+    taro.classList.remove('slash'); void taro.offsetWidth; taro.classList.add('slash');
+    tiles[i].classList.remove('chop'); void tiles[i].offsetWidth; tiles[i].classList.add('chop');
+    if (!quiet) { sfx.swish(); setTimeout(sfx.harvest, 90); }
     showCount();
     if (state.harvested % 10 === 0) fireworks();
   }
@@ -180,7 +184,7 @@
   // Taro walks tile to tile and picks whatever is ripe where he stands.
   const taro = document.createElement('div');
   taro.className = 'taro';
-  taro.innerHTML = art.taro + '<span class="taro-name">Taro</span>';
+  taro.innerHTML = `<div class="taro-body">${art.taro}<span class="sword">${SWORD}</span><span class="swoosh"></span></div><span class="taro-name">Taro</span>`;
   field.append(taro);
   let at = 0;
 
