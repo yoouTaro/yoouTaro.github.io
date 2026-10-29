@@ -76,6 +76,7 @@ h1 { font-size: var(--step-display); max-width: 14em; }
 .areas { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 48px 64px; }
 .areas h3 { font: 500 1.25rem/1.3 var(--text); margin-bottom: 8px; }
 .areas p { max-width: 44ch; }
+.daily { margin-top: 56px; color: var(--muted); }
 .stack { margin-top: 10px; color: var(--muted); font-size: var(--step-small); }
 
 .side-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
