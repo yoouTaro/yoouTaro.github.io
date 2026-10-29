@@ -84,6 +84,14 @@ h1 { font-size: var(--step-display); max-width: 14em; }
 .side-list h3 { display: flex; align-items: center; gap: 10px; font: 500 1.125rem/1.2 var(--text); margin-bottom: 6px; }
 .side-list h3 img { width: 28px; height: 28px; }
 .side-list p { max-width: 32ch; }
+.keys { display: inline-flex; gap: 3px; vertical-align: 1px; }
+kbd {
+  display: inline-grid; place-items: center;
+  min-width: 1.75em; height: 1.75em; padding: 0 .4em;
+  font: 500 .9375rem/1 -apple-system, system-ui, sans-serif;
+  color: var(--ink); background: #fbfaf7;
+  border: 1px solid #d6d3cc; border-bottom-width: 2px; border-radius: 5px;
+}
 .links { display: flex; gap: 20px; margin-top: 12px; }
 
 .farm { flex: 0 0 clamp(270px, 22vw, 320px); }
