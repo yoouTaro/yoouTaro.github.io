@@ -147,7 +147,20 @@ h1 { font-size: var(--step-display); max-width: 14em; }
 .intro .farm-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-top: 12px; color: var(--muted); font-size: .8125rem; white-space: nowrap; max-width: none; }
 .sound { padding: 0; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; text-decoration: underline; text-underline-offset: .2em; text-decoration-thickness: 1px; }
 .sound:hover { color: var(--ink); }
-.fireworks { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+.lvl {
+  position: absolute; left: 50%; top: -14px; z-index: 2;
+  padding: 3px 10px;
+  font: 500 .8125rem/1.3 var(--text);
+  color: #2a1d14; background: #f2c94c;
+  box-shadow: 0 3px 0 #a8452f;
+  border-radius: 4px; white-space: nowrap; pointer-events: none;
+  animation: lvl 1.8s var(--ease) forwards;
+}
+.spark { position: absolute; width: 4px; height: 4px; z-index: 2; pointer-events: none; animation: spark .9s ease-out forwards; }
+.taro.cheer .taro-body { animation: cheer .5s steps(4) 2; }
+@keyframes lvl { 0% { opacity: 0; transform: translate(-50%, 8px) scale(.8); } 15% { opacity: 1; transform: translate(-50%, 0) scale(1.08); } 25% { transform: translate(-50%, 0) scale(1); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -10px); } }
+@keyframes spark { to { opacity: 0; transform: translate(var(--dx), var(--dy)); } }
+@keyframes cheer { 50% { translate: 0 -22%; } }
 @keyframes step { 50% { translate: 0 -8%; } }
 @keyframes bob { 50% { transform: translateY(-6%); } }
 @keyframes pop { from { opacity: 1; transform: translate(-50%, 0); } to { opacity: 0; transform: translate(-50%, -28px); } }

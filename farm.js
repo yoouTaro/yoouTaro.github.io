@@ -58,21 +58,7 @@
     harvest: () => blip([[660, 0.08], [880, 0.08], [1320, 0.16]]),
     bump: () => blip([[90, 0.08]], 'square', 0.04),
     swish: () => blip([[1400, 0.03], [900, 0.03], [500, 0.05]], 'sawtooth', 0.03),
-    boom: () => {
-      if (muted) return;
-      ctx ||= new (window.AudioContext || window.webkitAudioContext)();
-      // A short burst of noise, like a pop and crackle.
-      const len = ctx.sampleRate * 0.6;
-      const buf = ctx.createBuffer(1, len, ctx.sampleRate);
-      const d = buf.getChannelData(0);
-      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len) ** 3;
-      const src = ctx.createBufferSource();
-      const g = ctx.createGain();
-      g.gain.value = 0.18;
-      src.buffer = buf;
-      src.connect(g).connect(ctx.destination);
-      src.start();
-    },
+    levelup: () => blip([[523, 0.09], [659, 0.09], [784, 0.09], [1047, 0.22]], 'square', 0.035),
   };
   function showSound() {
     soundBtn.textContent = muted ? 'Sound off' : 'Sound on';
@@ -138,47 +124,37 @@
     tiles[i].classList.remove('chop'); void tiles[i].offsetWidth; tiles[i].classList.add('chop');
     if (!quiet) { sfx.swish(); setTimeout(sfx.harvest, 90); }
     showCount();
-    if (state.harvested % 10 === 0) fireworks();
+    if (state.harvested % 10 === 0) levelUp();
   }
 
-  // Every 10th harvest: pixel fireworks over the whole page.
-  function fireworks() {
-    const cv = document.createElement('canvas');
-    cv.className = 'fireworks';
-    const dpr = Math.min(2, devicePixelRatio || 1);
-    cv.width = innerWidth * dpr;
-    cv.height = innerHeight * dpr;
-    document.body.append(cv);
-    const g = cv.getContext('2d');
-    g.scale(dpr, dpr);
-    const COLORS = ['#e07b2e', '#f2c94c', '#d4423a', '#8ab44f', '#3d6fa8', '#8a4f9e'];
-    const parts = [];
-    const burst = (x, y) => {
-      const col = COLORS[Math.floor(Math.random() * COLORS.length)];
-      for (let i = 0; i < 72; i++) {
-        const a = (i / 72) * Math.PI * 2, v = 3 + Math.random() * 5;
-        parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1, col });
-      }
-      sfx.boom();
-    };
-    const W = innerWidth, H = innerHeight;
-    [0, 350, 700, 1000, 1300].forEach((ms) => setTimeout(() => burst(W * (0.15 + Math.random() * 0.7), H * (0.15 + Math.random() * 0.4)), ms));
-    const start = performance.now();
-    (function frame(now) {
-      g.clearRect(0, 0, W, H);
-      parts.forEach((p) => {
-        p.x += p.vx; p.y += p.vy; p.vy += 0.06; p.vx *= 0.985; p.life -= 0.012;
-        if (p.life <= 0) return;
-        g.globalAlpha = p.life;
-        g.fillStyle = p.col;
-        g.fillRect(Math.round(p.x), Math.round(p.y), 5, 5);
-      });
-      if (now - start < 3200) requestAnimationFrame(frame); else cv.remove();
-    })(start);
+  // Every 10th harvest Taro levels up: a banner, a hop and a few sparkles in the field.
+  function levelUp() {
+    const lvl = Math.floor(state.harvested / 10) + 1;
+    const tag = document.createElement('span');
+    tag.className = 'lvl';
+    tag.textContent = `Level ${lvl}!`;
+    field.append(tag);
+    setTimeout(() => tag.remove(), 1800);
+    taro.classList.remove('cheer'); void taro.offsetWidth; taro.classList.add('cheer');
+    const COLORS = ['#f2c94c', '#fff', '#8ab44f'];
+    for (let n = 0; n < 14; n++) {
+      const p = document.createElement('i');
+      p.className = 'spark';
+      p.style.left = `${tiles[at].offsetLeft + tiles[at].offsetWidth / 2}px`;
+      p.style.top = `${tiles[at].offsetTop + tiles[at].offsetHeight / 2}px`;
+      p.style.background = COLORS[n % COLORS.length];
+      const a = (n / 14) * Math.PI * 2, d = 30 + Math.random() * 30;
+      p.style.setProperty('--dx', `${Math.cos(a) * d}px`);
+      p.style.setProperty('--dy', `${Math.sin(a) * d}px`);
+      field.append(p);
+      setTimeout(() => p.remove(), 900);
+    }
+    sfx.levelup();
+    showCount();
   }
 
   function showCount() {
-    countEl.textContent = `${state.harvested} harvested`;
+    countEl.textContent = `Lv ${Math.floor(state.harvested / 10) + 1} · ${state.harvested} harvested`;
   }
 
   // Taro walks tile to tile and picks whatever is ripe where he stands.
